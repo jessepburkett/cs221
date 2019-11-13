@@ -26,9 +26,12 @@ pikachu = {'name': 'pikachu', 'moves': {'thunderbolt': (95, 'electric', 'special
 pikachu['stats'] = calcStats(pikachu['stats'])
 charizard = {'name': 'charizard', 'moves':{'fire blast':(120, 'fire', 'special'), 'flamethrower':(90, 'fire', 'special')}, 'stats':{'hp':78, 'atk':84, 'def':78, 'spe':100, 'spc':85}, 'type':('fire', 'flying')}
 charizard['stats'] = calcStats(charizard['stats'])
+venasaur = {'name': 'venasaur', 'moves': {'solarbeam': (120, 'grass', 'special'), 'razor leaf': (55, 'grass', 'special')}, 'stats' : {'hp': 80, 'atk': 82, 'def': 83, 'spe': 80, 'spc': 100}, 'type': ('grass', None)}
+venasaur['stats'] = calcStats(venasaur['stats'])
 
-Agent['Pokemon'] = [pikachu, charizard]
-Opp['Pokemon'] = [charizard, pikachu]
+
+Agent['Pokemon'] = [venasaur, charizard]
+Opp['Pokemon'] = [charizard, venasaur]
 
 state = BattleState(Agent, Opp)
 
@@ -51,9 +54,29 @@ newState = state.generateSuccessor(1, 'thunderbolt', 'moves')
 print(newState.opp)
 '''
 #test minimax agent
-alg = MinimaxAgent(2)
-#action, movtype = alg.getAction(state)
+alg = MinimaxAgent(3)
 
+'''
+action, movType = alg.getAction(state)
+print('my action: ', action, movType)
+state = state.generateSuccessor(1, action, movType)
+
+enemyaction, movType = alg.getEnemyAction(state)
+print('opp action: ', enemyaction, movType)
+state = state.generateSuccessor(-1, enemyaction, movType)
+'''
+while not state.isEnd():
+    action, movType = alg.getAction(state)
+    state = state.generateSuccessor(1, action, movType)
+    print(action, movType)
+    if state.isEnd():
+        break
+    enemy, movType = alg.getEnemyAction(state)
+    state = state.generateSuccessor(-1, enemy, movType)
+print('agent: ', state.agent)
+print('opponent: ', state.opp)
+#action, movtype = alg.getAction(state)
+'''
 
 while not state.isEnd():
 	minimaxState = state
@@ -61,3 +84,4 @@ while not state.isEnd():
 	#print(action, movtype)
 	state = state.generateSuccessor(alg.index, action, movtype)
 	print(state.agent, state.opp)
+'''
