@@ -2,6 +2,8 @@ from GameState import BattleState
 from minimax import MinimaxAgent
 import random
 
+#File tests the MinimaxAgent and BattleState class
+
 Agent = {'Pokemon': [], 'currPoke': 0}
 Opp = {'Pokemon': [], 'currPoke': 0}
 
