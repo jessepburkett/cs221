@@ -1,6 +1,8 @@
 from GameState import BattleState
 import random
 
+#almost identical to what we have written for pacman, biggest difference is calling new states using generateSuccessor
+
 class MinimaxAgent():
 
     def __init__ (self, depth = '2'):
