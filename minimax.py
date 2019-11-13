@@ -47,8 +47,12 @@ class MinimaxAgent():
         bestindex = [index for index in range(len(v)) if v[index] == bestscore]
         chosenindex = random.choice(bestindex)
         if chosenindex < len(actions['moves']):
+            #print('Chosen move is: ', list(actions['moves'])[chosenindex])
+            #print(gameState.agent)
             return list(actions['moves'])[chosenindex], 'moves'
         else:
+            #print('Switching to: ', actions['switch'][chosenindex - len(actions['moves'])])
+            #print(gameState.agent)
             return actions['switch'][chosenindex - len(actions['moves'])], 'switch'
 
 

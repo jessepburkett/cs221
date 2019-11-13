@@ -11,6 +11,9 @@ charizard = {'name': 'charizard', 'moves':{'fire blast':(120, 'fire', 'special')
 Agent['Pokemon'] = [pikachu, charizard]
 Opp['Pokemon'] = [charizard, pikachu]
 '''
+import math
+
+LEVEL = 100
 
 class BattleState:
     #state includes an agent list, opponent list, agent current pokemon(denoted by integer), and opponent current pokemon
@@ -28,23 +31,38 @@ class BattleState:
         for i in range(len(self.agent['Pokemon'])):
             if self.agent['Pokemon'][i]['stats']['hp'] > 0:
                 agent = False
+                break
+        for i in range(len(self.opp['Pokemon'])):
             if self.opp['Pokemon'][i]['stats']['hp'] > 0:
                 opp = False
-            if not agent and not opp:
-                return False
-        return True
+                break
+        if not agent and not opp:
+            return False
+        else: 
+            #print('Game Over')
+            return True
     
     #gets the legal Actions of a state 
     ##### STILL NEED TO DO THE CASE WHERE THE INDEX'S CURRENT POKEMON HAS 0 HEALTH
     def getLegalActions(self, agentIndex = 1):
         if agentIndex == 1:
-            moves = self.agent['Pokemon'][self.currAgent]['moves'].keys()
+            #Our turn
+            #only add moves to legal actions if currPoke is alive
+            moves = []
+            if self.agent['Pokemon'][self.currAgent]['stats']['hp'] > 0:
+                moves = self.agent['Pokemon'][self.currAgent]['moves'].keys()
+
             switch = []
             for i in range(len(self.agent['Pokemon'])):
                 if i != self.currAgent and self.agent['Pokemon'][i]['stats']['hp'] > 0:
                     switch.append(i)
         else:
-            moves = self.opp['Pokemon'][self.currOpp]['moves'].keys()
+            #Opponent's turn
+            #only add moves to legal actions if currPoke is alive
+            moves = []
+            if self.opp['Pokemon'][self.currOpp]['stats']['hp'] > 0:
+                moves = self.opp['Pokemon'][self.currOpp]['moves'].keys()
+
             switch = []
             for i, pokemon in enumerate(self.opp['Pokemon']):
                 if i != self.currOpp and pokemon['stats']['hp'] > 0:
@@ -65,23 +83,29 @@ class BattleState:
             atk = self.opp['Pokemon'][self.currOpp]['stats']['atk'] if moveType == 'physical' else self.opp['Pokemon'][self.currOpp]['stats']['spc']
             defense = self.agent['Pokemon'][self.currAgent]['stats']['def'] if moveType == 'physical' else self.agent['Pokemon'][self.currAgent]['stats']['spc']
 
-        level = 50
-        damage = (((2 * level)/5 + 2) * power * atk / defense)/50 + 2
-        return damage
+
+        damage = (((2 * LEVEL)/5 + 2) * power * atk / defense)/50 + 2
+        return math.floor(damage)
 
     #Given the actor, action, and action Type, give a new state with is the successor state
     def generateSuccessor(self, index, action, actType):
-        state = BattleState(self.agent, self.opp)
+        agent = self.agent
+        opp = self.opp
+        state = BattleState(agent, opp)
         if actType == 'moves':
             damage = self.damageCalc(index, action)
             if index == 1:
-                state.opp['Pokemon'][self.currOpp]['stats']['hp'] -= damage
+                #print('Player 1 is inflicting ', damage, ' damage to Player 2 with ', action)
+                state.opp['Pokemon'][self.currOpp]['stats']['hp'] = max(self.opp['Pokemon'][self.currOpp]['stats']['hp'] - damage, 0)
             else:
-                state.agent['Pokemon'][self.currAgent]['stats']['hp'] -= damage
+                #print('Player 2 is inflicting ', damage, ' damage to Player 1 with ', action)
+                state.agent['Pokemon'][self.currAgent]['stats']['hp'] = max(self.agent['Pokemon'][self.currAgent]['stats']['hp'] - damage, 0)
         if actType == 'switch':
             if index == 1:
+                #print("Player 1 is switching to: ", action)
                 state.currAgent = action
             else:
+                #print("Player 1 is switching to: ", action)
                 state.currOpp = action
         return state
 
