@@ -18,6 +18,8 @@ effectiveness = {
 	'dragon':{'dragon':2.0}
 }
 
+import math
+
 def getDmgMult(moveType, defType):
 	mult = 1
 	if defType[0] in effectiveness[moveType]:
